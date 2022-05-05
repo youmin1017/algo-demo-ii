@@ -3,7 +3,7 @@
 ## Run this project
 
 This Project includes `dear-imgui` and builds with `CMake`  
-To Run this project type followings command.
+To Run this project type following commands.
 
 ```bash
 $ mkdir build && cd build
