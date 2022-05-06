@@ -11,11 +11,13 @@ find_package(OpenGL REQUIRED)
 
 file(GLOB IMGUI "src/imgui/imgui*.cpp")
 file(GLOB BACKEND "src/imgui/backend/*.cpp")
+file(GLOB DEMO "src/demo/*.cpp")
 
 set(SOURCES
     src/main.cpp
     ${IMGUI}
     ${BACKEND}
+    ${DEMO}
 )
 
 add_executable(main ${SOURCES})
@@ -26,5 +28,6 @@ target_link_libraries(main OpenGL::GL)
 include_directories(
     PRIVATE 
         ${PROJECT_SOURCE_DIR}/include/imgui
+        ${PROJECT_SOURCE_DIR}/include/demo
         ${PROJECT_SOURCE_DIR}/include/imgui/backend
 )
