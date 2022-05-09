@@ -1,5 +1,6 @@
 #include "app.h"
 #include "canvas.h"
+#include "convex_hull.h"
 
 namespace Demo {
 
@@ -7,15 +8,13 @@ namespace Demo {
     {
         ImGui::Begin("Demo");
 
-        static Canvas* canvas = new Canvas();
+        static ConvexHull* convexHull = new ConvexHull();
         
         if(ImGui::BeginTabBar("Demo"))
         {
             if(ImGui::BeginTabItem("Canvas"))
             {
-                canvas->AddPoint(ImVec2(20,10));
-                canvas->AddLine(ImVec2(10, 10), ImVec2(20, 40));
-                canvas->Render();
+                convexHull->Render();
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();

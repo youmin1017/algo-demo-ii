@@ -12,11 +12,12 @@ namespace Demo {
         void Render();
 
         // APIs
-        virtual void AddLine(ImVec2 p1, ImVec2 p2);
+        virtual void Clear();
+        virtual void AddLine(const ImVec2& p1, const ImVec2& p2);
         virtual void RemoveLine(size_t index);
-
-        virtual void AddPoint(ImVec2 p);
+        virtual void AddPoint(const ImVec2& p);
         virtual void RemovePoint(size_t index);
+        virtual void SetPoints(ImVector<ImVec2>& points);
     
     protected:
         float scale;

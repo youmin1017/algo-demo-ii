@@ -10,9 +10,16 @@ namespace Demo {
     }
 
 
-    void Canvas::AddLine(ImVec2 p1, ImVec2 p2)
+    void Canvas::Clear()
     {
-        this->lines.push_back(ImVec4(p1.x, p1.y, p2.x, p2.y));
+        this->points.clear();
+        this->lines.clear();
+    }
+
+
+    void Canvas::AddLine(const ImVec2& p1, const ImVec2& p2)
+    {
+        this->lines.push_back(ImVec4(p1.x, -p1.y, p2.x, -p2.y));
     }
 
 
@@ -22,9 +29,9 @@ namespace Demo {
     }
 
 
-    void Canvas::AddPoint(ImVec2 p)
+    void Canvas::AddPoint(const ImVec2& p)
     {
-        this->points.push_back(p);
+        this->points.push_back(ImVec2(p.x, -p.y));
     }
 
 
@@ -34,16 +41,26 @@ namespace Demo {
     }
 
 
+    void Canvas::SetPoints(ImVector<ImVec2>& points)
+    {
+        for(const auto& p : points) 
+        {
+            AddPoint(ImVec2(p.x, p.y));
+        }
+    }
+
+
     void Canvas::Render()
     {
         static ImVec2 scrolling(0.0f, 0.0f);
         static bool opt_enable_grid = true;
         static bool opt_enable_context_menu = true;
+        static bool opt_enable_point_coordinate = false;
         static bool adding_line = false;
 
-        ImGui::Checkbox("Enable grid", &opt_enable_grid);
-        ImGui::Checkbox("Enable context menu", &opt_enable_context_menu);
-        ImGui::Text("Mouse Left: drag to add lines,\nMouse Right: drag to scroll, click for context menu.");
+        ImGui::Checkbox("Enable grid", &opt_enable_grid);                 ImGui::SameLine();
+        ImGui::Checkbox("Enable context menu", &opt_enable_context_menu); ImGui::SameLine();
+        ImGui::Checkbox("Enable point coordinate", &opt_enable_point_coordinate);
 
         // Typically you would use a BeginChild()/EndChild() pair to benefit from a clipping region + own scrolling.
         // Here we demonstrate that this can be replaced by simple offsetting + custom drawing + PushClipRect/PopClipRect() calls.
@@ -114,9 +131,18 @@ namespace Demo {
             if (adding_line)
                 points.resize(points.size() - 2);
             adding_line = false;
-            if (ImGui::MenuItem("Remove one", NULL, false, points.Size > 0)) { points.resize(points.size() - 2); }
-            if (ImGui::MenuItem("Remove all", NULL, false, points.Size > 0)) { points.clear(); }
+            if (ImGui::MenuItem("Remove all", NULL, false, points.Size > 0)) { this->Clear(); }
             ImGui::EndPopup();
+        }
+
+        if(opt_enable_point_coordinate)
+        {
+            for (int n = 0; n < points.Size; n += 1)
+            {
+                ImVec2 cen(origin.x + points[n].x * scale - 120 , origin.y + points[n].y * scale);
+                ImGui::SetCursorPos(cen);
+                ImGui::Text("(%02f, %02f)", points[n].x, points[n].y);
+            }
         }
 
         // Draw grid + all lines in the canvas
