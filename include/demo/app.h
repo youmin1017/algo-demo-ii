@@ -3,6 +3,6 @@
 
 namespace Demo {
 
-    void RenderApp();
+void RenderApp();
 
 }
