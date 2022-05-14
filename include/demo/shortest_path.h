@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <sstream>
 
 #include "canvas.h"
 
@@ -14,7 +15,7 @@ class ShortestPath {
 
    // Algorithm's methods
    public:
-    ImVector<ImVec2> Dijkstra(const char start, const std::string& __input);
+    int Dijkstra(int start,int  v, std::string __input);
    private:
 
    private:

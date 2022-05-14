@@ -20,7 +20,8 @@ void ConvexHull::Render() {
     static ImGuiIO &io = ImGui::GetIO();
     ImGui::Text("%f FPS", io.Framerate);
 
-    static char input[128] = "0 0 2 0 4 1 3 3 1 4 0 2 2 1 1 3";
+    static char input[1024] = 
+        "0 0 1 3 2 4 5 5 10 10";
     ImGui::InputText("Input", input, sizeof(input));
     ImGui::SameLine();
 
@@ -30,6 +31,10 @@ void ConvexHull::Render() {
     }
 
     if (ImGui::Button("Start!")) {
+        canvas->Clear();
+        AddPoints(input);
+        canvas->SetPoints(points);
+
         auto ch = Andrew();
 
         ch.push_back(ch.front());
@@ -45,6 +50,9 @@ ImVector<ImVec2> ConvexHull::Andrew() {
     SortPoints();
     ImVector<ImVec2> res;
 
+    /**
+     * @brief Construct lowerbound edge 
+     */
     for (const auto &pt : points) {
         while (res.Size >= 2 &&
                !cross(res[(res.Size - 2)], res[res.Size - 1], pt)) {
@@ -53,6 +61,9 @@ ImVector<ImVec2> ConvexHull::Andrew() {
         res.push_back(pt);
     }
 
+    /**
+     * @brief Construct upperbound edge 
+     */
     auto t = res.Size + 1;
     for (int i = points.Size - 1; i >= 0; i--) {
         while (res.size() >= t &&
@@ -62,11 +73,12 @@ ImVector<ImVec2> ConvexHull::Andrew() {
         res.push_back(points[i]);
     }
 
-    res.pop_back();
+    res.pop_back(); // remove duplicate starting point
     return res;
 }
 
 void ConvexHull::AddPoints(char *__points) {
+    this->points.clear();
     auto points_str = Demo::Utils::split(__points, ' ');
 
     for (int i = 0; i < points_str.size(); i += 2) {

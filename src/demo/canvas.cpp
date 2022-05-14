@@ -139,7 +139,7 @@ void Canvas::Render() {
             ImVec2 cen(origin.x + points[n].x * scale - 120,
                        origin.y + points[n].y * scale);
             ImGui::SetCursorPos(cen);
-            ImGui::Text("(%02f, %02f)", points[n].x, points[n].y);
+            ImGui::Text("(%02f, %02f)", points[n].x, -points[n].y);
         }
     }
 

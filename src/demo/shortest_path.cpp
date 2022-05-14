@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 #include "demo_utils.h"
 
@@ -12,41 +13,46 @@ ShortestPath::
 }
 
 void ShortestPath::Render() {
-    static char input[128] =
-        "(A,B,2) (A,C,4) (B,C,1) (B,D,4) (B,E,2) (C,E,3) (D,E,3) (D,F,2) "
-        "(E,F,2)";
-    ImGui::InputText("Input", input, sizeof(input));
+    static char input[128 * 32] =
+        "3 2 1\n"
+        "0 1 5\n"
+        "1 2 7";
+    ImGui::InputTextMultiline("Input", input, sizeof(input));
+    std::stringstream ss(input);
+    int v, e, a;
+    static int res(0);
+    ss >> v >> e >> a;
+    std::string tmp, _input;
+    while(std::getline(ss, tmp)) _input += tmp + ' ';
+
     ImGui::SameLine();
     if (ImGui::Button("Start!")) {
-        Dijkstra('A', input);
+        res = Dijkstra(a, v, _input);
     }
+    ImGui::Text("%d", res);
 }
 
-ImVector<ImVec2> ShortestPath::Dijkstra(const char start,
-                                        const std::string& __input) {
-    auto __input_splitted = Demo::Utils::split(__input, ' ');
+int ShortestPath::Dijkstra(int start, int max_node,
+                                        std::string __input) {
 
     // To find max char in graph
-    char max_node;
-    for (const auto& c : __input) {
-        if (c != '(' || c != ')' || c != ',') {
-            max_node = c > max_node ? c : max_node;
-        }
-    }
 
     // Construct Adjacency Matrix
     using std::vector;
-    u_int matrix_size = max_node - 'A' + 1;
+    u_int matrix_size = max_node;
     vector<vector<int>> AM(matrix_size, vector(matrix_size, 0));
-    for (const auto& node : __input_splitted) {
-        int i(node[1] - 'A'), j(node[3] - 'A');
-        AM[i][j] = AM[j][i] = node[5] - '0';  // record cost
+    std::stringstream ss(__input.c_str());
+    int a, b, c;
+
+    while(ss >> a >> b >> c) {
+        AM[a][b] = AM[b][a] = c;
     }
+
     for (int i = 0; i < AM.size(); i++) AM[i][i] = 0;
 
     // Algorithm main
     vector<SPTableItem> sp_table(AM.size(), SPTableItem());
-    sp_table[0].cost = 0;
+    sp_table[start].cost = 0;
 
     auto find_min_idx = [&sp_table]() -> int {
         int min = INT32_MAX, min_idx;
@@ -85,11 +91,15 @@ ImVector<ImVec2> ShortestPath::Dijkstra(const char start,
     }
     std::cout << "=============================================\n\n\n";
 
-    for (auto& sp : sp_table) {
-        std::cout << sp.cost << '\t' << sp.prev << std::endl;
+    int max = 0;
+    for (int i=start; i < sp_table.size(); ++i) {
+        std::cout << sp_table[i].cost << std::endl;
+        max = std::max(max, sp_table[i].cost);
     }
+    std::cout << max << std::endl;
 
-    return {};
-}
+    return max;
+    
+} 
 
 }  // namespace Demo
